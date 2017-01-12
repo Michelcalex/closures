@@ -10,6 +10,13 @@ module.exports = {
      */
     counter: function (start) {
         
+        return {
+            next: function() {
+                start++;
+
+                return start;
+            }
+        }
     },
 
     /**
@@ -22,7 +29,13 @@ module.exports = {
      *  tot.discount(0.20); // return 16
      */
     total: function (amount) {
-        
+        return {
+            discount: function(param) {
+                let promo = amount * param;
+
+                return amount - promo;
+            }
+        }
     },
 
     /**
@@ -32,11 +45,27 @@ module.exports = {
      *  let user = closures.user();
      *  user.setName('Francis Bacon');  // return true
      *  user.getName();                 // return 'Francis Bacon'
-     *  user.setName('123 hi');         // return false
+     *  user.setName('x123 hi');         // return false
      *  user.getName();                 // return 'Francis Bacon'
      */
     user: function () {
-        
+        return {
+            userName: '',
+            setName: function(name) {
+                let regex = /^[A-Za-z ]+$/;
+                if(regex.test(name)) {
+                    //console.log('here');
+                    userName = name;
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+
+            getName: function() {
+                return userName;
+            }
+        }
     },
 
     /**
@@ -50,10 +79,28 @@ module.exports = {
      *  lives.restart();
      *  console.log(lives.left()); // 5
      */
+
+
     lives: function (start) {
-        
+        let currentlives = start;
+        return {
+            left: function() {
+                return currentlives;
+            },
+            //take away one life everytime this function is called
+            died: function() {
+                currentlives -= 1;
+                return currentlives;
+            },
+            //reset life to start everytime this function is called
+            restart: function() {
+                currentlives = start;
+                return currentlives;
+            }
+        }
     },
 
+    
     /**
      * Return a string that contains the 'message id' before the message text.
      * The message ID starts at one and increments with each record.
@@ -65,7 +112,13 @@ module.exports = {
      *  console.log(msg); // '[2] second message'
      */
     messages: function () {
-        
+        let count = 0;
+        return {
+            record: function(messageinfo) {
+                count++;
+                return '['+ count +']' + ' ' + messageinfo;
+            }
+        }    
     },
 
     /**
@@ -89,6 +142,34 @@ module.exports = {
      *  console.log(pocket.trinkets()); // 1
      */
     pocket: function (start) {
+        let currenttotal = start;
+        let buycount = 0;
+        return {
+            //10 coins equals 1 trinket. 
+            coins: function() {
+                if(currenttotal < 0) {
+                    currenttotal = 0;
+                } else {
+                    return currenttotal;
+                }
+            },
+            //You can buy 1 trinket for 10 coins
+            buy: function() {
+                currenttotal = currenttotal - 10;
+                buycount++;
+                return currenttotal;
+            },
+            // 1 trinket equals 10 coins.
+            trinkets: function() {
+                return buycount;
+            }, 
+            //sell 1 trinket for 5 coins
+            sell: function() {
+                currenttotal = currenttotal + 5;
+                buycount--;
+                return currenttotal;
+            }
+        }
         
     },
 
@@ -98,6 +179,8 @@ module.exports = {
      *  multiply(3)(5); // return 15
      */
     multiply: function (val) {
-        
+        return function(num) {
+            return val * num;
+        }
     },
 };
